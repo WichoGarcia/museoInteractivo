@@ -75,6 +75,8 @@ app.get("/menu",function(req,res){
     res.render("menu");
 })
 
+var selection = undefined;
+
 app.get("/solar",function(req,res){
 	Artwork.find({gallery: "solar"}, async (error, docs) => {
 		if (error) 
@@ -82,14 +84,25 @@ app.get("/solar",function(req,res){
 		else
 			res.render("gallery", {
 				gallery_name: 'Space Gallery',
-				docs: docs
+				docs: docs,
+				selected: selection
 			});
 	});
 })
 
-app.get('/view_img', (req, res) => {
-	var img_req = req;
-	res.redirect('/solar');
+app.post('/view_img', (req, res) => {
+	var img_name = req.body.img;
+
+	var docs = Artwork.find({gallery: "solar"});
+
+	Artwork.find({work_title: img_name}, async (error, doc) => {
+		if (error)
+			console.log(error);
+		else {
+			selection = doc[0];
+			res.redirect('/solar');
+		}
+	});
 });
 
 function isCorrectPassword(passwordI,password,callback){
