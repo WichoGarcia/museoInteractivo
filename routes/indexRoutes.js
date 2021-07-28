@@ -79,12 +79,18 @@ app.get("/solar",function(req,res){
 	Artwork.find({gallery: "solar"}, async (error, docs) => {
 		if (error) 
 			console.log(error);
-		else {
-			console.log(docs);
-			res.render("gallery", {docs: docs});
-		}
+		else
+			res.render("gallery", {
+				gallery_name: 'Space Gallery',
+				docs: docs
+			});
 	});
 })
+
+app.get('/view_img', (req, res) => {
+	var img_req = req;
+	res.redirect('/solar');
+});
 
 function isCorrectPassword(passwordI,password,callback){
     bcrypt.compare(passwordI,password,function(err,same){

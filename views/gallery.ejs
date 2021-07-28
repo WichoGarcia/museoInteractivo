@@ -1,35 +1,143 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-    <title>Menu</title>
-  </head>
+		<title> <%= gallery_name %> </title>
+	</head>
 
-<%- include ("./templates/header") %>
-  <body>
-      <div class="container">
-		  <% for (var i = 0; i < docs.length; i++) { %>
-		  <img src='<%= docs[i].url %>'>
-		  <% } %>
-      </div>
+	<%- include ("./templates/header") %>
+	<body>
+		<main>
+			<form id='gallery' action='/view_img' method='get'>
+				<% for (var i = 0; i < docs.length; i++) { %>
+				<input class="image_button" 
+					   type="image" 
+					   src='<%= docs[i].url %>'
+					   id='<%= docs[i].work_title %>'
+					   value='Pressed'>
+					   <% } %>
+			</form>
 
-    <!-- Optional JavaScript; choose one of the two! -->
+			<div id='sidebar'>
+				<div class='information'>
+					<img>
+					<h3> Título de la obra </h3>
+					<p> Autor </p>
+					<p> Fecha </p>
+					<p> Descripción </p>
+				</div>
+				<div class='comment_editor'>
+					<h4>Deja un comentario</h4>
+					Deja un comentario<br>
+					<form class='form-inline'>
+						<div class='form-group mb-2'>
+							<input class="form-control"> </input>
+						</div>
+						<button type='button' class="btn btn-primary mb-2"> 
+							enviar 
+						</button>
+					</form>
+				</div>
+				<div class='comment_section'>
+					<h4>Comentarios</h4>
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item comment">
+							<label>
+								<b>Usuario1:</b> comentario
+							</label>
+						</li>
+						<li class="list-group-item comment">
+							<label>
+								<b>Yo:</b> me gustó
+							</label>
+							<div class='btn-group btn-group-sm' role='group'>
+								<button type='button' class='btn btn-outline-secondary'>
+									edit 
+								</button>
+								<button type='button' class='btn btn-outline-danger'>
+									delete
+								</button>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</main>
+	</body>
+	<style>
 
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-  </body>
-<style>
-img {
-	width: auto;
-	height: 250px;
+a {
+	margin-left: 25px;
 }
-</style>
+
+main {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+}
+
+#gallery {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+	width: 50%;
+}
+
+.image_button {
+	display: flex;
+	width: auto;
+	height: 200px;
+	margin: 5px;
+}
+
+#sidebar {
+	display: flex;
+	flex-flow: column wrap;
+	background-color: #dddddd;
+	border-radius: 25px;
+	padding: 15px;
+	width: 45%;
+}
+
+img {
+	display: flex;
+	width: 100%;
+	height: 200px;
+	margin: 5px;
+	border-style: solid;
+}
+
+.information {
+	display: flex;
+	flex-flow: column wrap;
+	align-items: center;
+	margin: 5px;
+}
+
+.comment_editor {
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: space-between;
+	margin: 5px
+}
+
+.comment_section {
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: space-between;
+	margin: 5px
+}
+
+.comment {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+	align-items: center;
+}
+	</style>
 </html>
