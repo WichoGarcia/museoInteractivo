@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const User = require("../models/usuario");
+const Comment = require("../models/comment");
+const Artwork = require("../models/artwork");
 const bcrypt = require("bcrypt");
 
 
@@ -74,7 +76,14 @@ app.get("/menu",function(req,res){
 })
 
 app.get("/solar",function(req,res){
-    res.render("solar");
+	Artwork.find({gallery: "solar"}, async (error, docs) => {
+		if (error) 
+			console.log(error);
+		else {
+			console.log(docs);
+			res.render("gallery", {docs: docs});
+		}
+	});
 })
 
 function isCorrectPassword(passwordI,password,callback){

@@ -9,6 +9,7 @@ nombre:{
 usuario:{
     type: String,
     required: true,
+    unique:true
 },
 correo:{
     type:String,
