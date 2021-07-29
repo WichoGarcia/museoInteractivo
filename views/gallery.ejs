@@ -29,10 +29,10 @@
 			<div id='sidebar'>
 				<% if (selected) { %>
 				<div class='information'>
-					<img src=<%= selected.url %>>
+					<img src='<%= selected.url %>'>
 					<h3> <%= selected.work_title %> </h3>
-					<p> <%= selected.author %></p>
-					<p> <%= selected.date %></p>
+					<p> <%= selected.author %> </p>
+					<p> <%= selected.date %> </p>
 					<p> <%= selected.description %></p>
 				</div>
 				<div class='comment_editor'>
@@ -42,7 +42,7 @@
 							<input class="form-control"> </input>
 						</div>
 						<button type='button' class="btn btn-primary mb-2"> 
-							enviar 
+							Enviar 
 						</button>
 					</form>
 				</div>
@@ -79,20 +79,18 @@
 	</body>
 	<style>
 
-a {
-	margin-left: 25px;
-}
-
 main {
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: space-around;
+	align-content: flex-start;
 }
 
 #gallery {
 	display: flex;
 	flex-flow: row wrap;
-	justify-content: space-around;
+	justify-content: space-evenly;
+	align-content: flex-start;
 	width: 50%;
 }
 
@@ -109,15 +107,15 @@ main {
 	background-color: #dddddd;
 	border-radius: 25px;
 	padding: 15px;
+	margin-button: 5px;
 	width: 45%;
 }
 
 img {
 	display: flex;
-	width: 100%;
+	width: 98%;
 	height: auto;
 	margin: 5px;
-	border-style: solid;
 }
 
 .information {

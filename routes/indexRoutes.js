@@ -76,8 +76,14 @@ app.get("/menu",function(req,res){
 })
 
 var selection = undefined;
+var comes_from_selection = false;
 
 app.get("/solar",function(req,res){
+	if (comes_from_selection)
+		comes_from_selection = false;
+	else
+		selection = undefined;
+
 	Artwork.find({gallery: "solar"}, async (error, docs) => {
 		if (error) 
 			console.log(error);
@@ -92,14 +98,14 @@ app.get("/solar",function(req,res){
 
 app.post('/view_img', (req, res) => {
 	var img_name = req.body.img;
-
 	var docs = Artwork.find({gallery: "solar"});
 
-	Artwork.find({work_title: img_name}, async (error, doc) => {
+		Artwork.find({work_title: img_name}, async (error, doc) => {
 		if (error)
 			console.log(error);
 		else {
 			selection = doc[0];
+			comes_from_selection = true;
 			res.redirect('/solar');
 		}
 	});

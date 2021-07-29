@@ -7,6 +7,9 @@ var ArtworkSchema = Schema({
 		required: true,
 		unique:true
 	},
+	author:{
+		type: String,
+	},
 	date:{
 		type: String,
 	},
