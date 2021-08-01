@@ -77,6 +77,8 @@ app.get("/menu",function(req,res){
 
 var selection = undefined;
 var comes_from_selection = false;
+var user_id = 0;
+var comment_to_edit = undefined;
 
 app.get("/solar",function(req,res){
 	if (comes_from_selection)
@@ -100,13 +102,13 @@ app.get("/solar",function(req,res){
 						comment_section = doc;
 				});
 
-			console.log(comment_section);
-
 			res.render("gallery", {
 				gallery_name: 'Space Gallery',
 				docs: docs,
 				selected: selection,
-				comments: comment_section
+				comments: comment_section,
+				comment_to_edit: comment_to_edit,
+				user: user_id // Cambiar a usuario actual
 			});
 		}
 	});
@@ -115,6 +117,8 @@ app.get("/solar",function(req,res){
 app.post('/view_img', (req, res) => {
 	var img_name = req.body.img;
 	var docs = Artwork.find({gallery: "solar"});
+
+	comment_to_edit = undefined;
 
 	Artwork.find({work_title: img_name}, async (error, doc) => {
 		if (error)
@@ -127,25 +131,82 @@ app.post('/view_img', (req, res) => {
 	});
 });
 
-var index = 0;
-
 app.post('/publishComment', async (req, res) => {
-	var comment = req.body.comment;
+	var msg = req.body;
 
-	var new_comment = new Comment({
-		text: comment,
-		user: index++,
-		artwork: selection.work_title
-	});
+	if (msg.comment) {
+		var comment = msg.comment;
 
-	await new_comment.save(error => {
-		if(error)
-			console.log(error);
-		else {
-			comes_from_selection = true;
-			res.redirect('/solar');
-		}
-	});
+		Comment.find({
+			artwork: selection.work_title,
+			user: user_id // Cambiar a usuario actual
+		}, async (error, docs) => {
+			if (error)
+				console.log(error);
+			else {
+				var can_publish = docs.length == 0;
+
+				if (can_publish) {
+					var new_comment = new Comment({
+						text: comment,
+						user: user_id, // Cambiar a usuario actual
+						artwork: selection.work_title
+					});
+
+					await new_comment.save((error) => {
+						if (error) console.log(error)
+					});
+				}
+			}
+		});
+	} else if (msg.update_comment) {
+		await Comment.updateOne({
+			artwork: comment_to_edit.artwork,
+			user: comment_to_edit.user
+		}, {
+			text: msg.update_comment
+		});
+
+		comment_to_edit = undefined;
+	}
+
+	comes_from_selection = true;
+	res.redirect('/solar');
+});
+
+app.post('/comment_change', async (req, res) => {
+	var msg = req.body;
+
+	if (msg.edit) {
+		var comment_id = msg.edit.split(',');
+		comes_from_selection = true;
+
+		Comment.find({
+			artwork: selection.work_title,
+			user: user_id // Cambiar a usuario actual
+		}, (error, doc) => {
+			if (error)
+				console.log(error);
+			else
+				comment_to_edit = doc[0]
+		});
+
+	} else if (msg.delete) {
+		var comment_id = msg.delete.split(',');
+		comes_from_selection = true;
+
+		Comment.deleteOne({
+			user: comment_id[0], 
+			artwork: comment_id[1]
+		}, (error) => {
+			if (error)
+				console.log(error);
+		});
+		
+	} else 
+		console.log("Error: request not valid");
+
+	res.redirect('/solar');
 });
 
 function isCorrectPassword(passwordI,password,callback){

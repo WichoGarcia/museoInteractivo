@@ -36,6 +36,20 @@
 					<p> <%= selected.description %></p>
 				</div>
 				<div class='comment_editor'>
+					<% if (comment_to_edit) { %>
+					<h5> Edita tu comentario </h5>
+					<form class='form' action='/publishComment' method='post'>
+						<div class='form-group mb-2'>
+							<input class="form-control" 
+								   name='update_comment'i
+								   value='<%= comment_to_edit.text %>'>
+							</input>
+						</div>
+						<button type='submit' class="btn btn-primary mb-2"> 
+							Guardar cambios
+						</button>
+					</form>
+					<% } else { %>
 					<h5>Deja un comentario</h5>
 					<form class='form' action='/publishComment' method='post'>
 						<div class='form-group mb-2'>
@@ -45,12 +59,36 @@
 							Enviar 
 						</button>
 					</form>
+					<% } %>
 				</div>
 				<div class='comment_section'>
 					<h5>Comentarios</h5>
 					<ul class="list-group list-group-flush">
 						<% if (comments) { %>
 						<% for (var i = 0; i < comments.length; i++) { %>
+						<% if (comments[i].user == user) { %>
+						<li class="list-group-item comment">
+							<label>
+								<b>Yo:</b> <%= comments[i].text %>
+							</label>
+							<form action='comment_change' method='post'>
+							<div class='btn-group btn-group-sm' role='group'>
+								<button type='submit' 
+										class='btn btn-outline-secondary'
+										name='edit'
+										value='<%=comments[i].user%>,<%=comments[i].artwork%>'>
+									edit 
+								</button>
+								<button type='submit' 
+										class='btn btn-outline-danger'
+										name='delete'
+										value='<%=comments[i].user%>,<%=comments[i].artwork%>'>
+									delete
+								</button>
+							</div>
+							</form>
+						</li>
+						<% } else { %>
 						<li class="list-group-item comment">
 							<label>
 								<b> <%= comments[i].user %>: </b> 
@@ -58,21 +96,7 @@
 							</label>
 						</li>
 						<% } %>
-						<li class="list-group-item comment">
-							<label>
-								<b>Yo:</b> me gustó
-							</label>
-							<div class='btn-group btn-group-sm' role='group'>
-								<button type='button' 
-										class='btn btn-outline-secondary'>
-									edit 
-								</button>
-								<button type='button' 
-										class='btn btn-outline-danger'>
-									delete
-								</button>
-							</div>
-						</li>
+						<% } %>
 						<% } %>
 					</ul>
 				</div>
