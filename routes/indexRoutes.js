@@ -87,12 +87,28 @@ app.get("/solar",function(req,res){
 	Artwork.find({gallery: "solar"}, async (error, docs) => {
 		if (error) 
 			console.log(error);
-		else
+		else {
+			var comment_section = undefined;
+
+			if (selection) 
+				await Comment.find({
+					artwork: selection.work_title
+				}, (error, doc) => {
+					if (error)
+						console.log(error);
+					else
+						comment_section = doc;
+				});
+
+			console.log(comment_section);
+
 			res.render("gallery", {
 				gallery_name: 'Space Gallery',
 				docs: docs,
-				selected: selection
+				selected: selection,
+				comments: comment_section
 			});
+		}
 	});
 })
 
@@ -100,11 +116,32 @@ app.post('/view_img', (req, res) => {
 	var img_name = req.body.img;
 	var docs = Artwork.find({gallery: "solar"});
 
-		Artwork.find({work_title: img_name}, async (error, doc) => {
+	Artwork.find({work_title: img_name}, async (error, doc) => {
 		if (error)
 			console.log(error);
 		else {
 			selection = doc[0];
+			comes_from_selection = true;
+			res.redirect('/solar');
+		}
+	});
+});
+
+var index = 0;
+
+app.post('/publishComment', async (req, res) => {
+	var comment = req.body.comment;
+
+	var new_comment = new Comment({
+		text: comment,
+		user: index++,
+		artwork: selection.work_title
+	});
+
+	await new_comment.save(error => {
+		if(error)
+			console.log(error);
+		else {
 			comes_from_selection = true;
 			res.redirect('/solar');
 		}

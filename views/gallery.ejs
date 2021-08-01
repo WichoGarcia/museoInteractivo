@@ -37,11 +37,11 @@
 				</div>
 				<div class='comment_editor'>
 					<h5>Deja un comentario</h5>
-					<form class='form-inline'>
+					<form class='form' action='/publishComment' method='post'>
 						<div class='form-group mb-2'>
-							<input class="form-control"> </input>
+							<input class="form-control" name='comment'> </input>
 						</div>
-						<button type='button' class="btn btn-primary mb-2"> 
+						<button type='submit' class="btn btn-primary mb-2"> 
 							Enviar 
 						</button>
 					</form>
@@ -49,24 +49,31 @@
 				<div class='comment_section'>
 					<h5>Comentarios</h5>
 					<ul class="list-group list-group-flush">
+						<% if (comments) { %>
+						<% for (var i = 0; i < comments.length; i++) { %>
 						<li class="list-group-item comment">
 							<label>
-								<b>Usuario1:</b> comentario
+								<b> <%= comments[i].user %>: </b> 
+								<%= comments[i].text %>
 							</label>
 						</li>
+						<% } %>
 						<li class="list-group-item comment">
 							<label>
 								<b>Yo:</b> me gustó
 							</label>
 							<div class='btn-group btn-group-sm' role='group'>
-								<button type='button' class='btn btn-outline-secondary'>
+								<button type='button' 
+										class='btn btn-outline-secondary'>
 									edit 
 								</button>
-								<button type='button' class='btn btn-outline-danger'>
+								<button type='button' 
+										class='btn btn-outline-danger'>
 									delete
 								</button>
 							</div>
 						</li>
+						<% } %>
 					</ul>
 				</div>
 				<% } else { %>

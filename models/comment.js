@@ -6,14 +6,9 @@ var CommentSchema = Schema({
 		type: String,
 		required: true,
 	},
-	date:{
-		type: String,
-		required: true
-	},
 	user:{
 		type: String,
 		required: true,
-		unique:true
 	},
 	artwork:{
 		type:String,
