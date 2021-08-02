@@ -4,8 +4,12 @@ const User = require("../models/usuario");
 const Comment = require("../models/comment");
 const Artwork = require("../models/artwork");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 
+const verify = require("../middlewares/verifyToken");
+
+var usuarioActual;
 
 app.get('/', async function(req,res){
     res.render('index',{valido:'',autenticar:''});
@@ -15,11 +19,9 @@ app.post('/',async function(req,res){
     var usuario = req.body.usuario;
     var passwordI = req.body.password;
 
-    console.log(usuario);
-    console.log(passwordI);
+
 
     User.findOne({usuario},async function(err,user){
-        console.log(user);
         if(err){
             res.render('',{autenticar:'no',valido:''});
         }
@@ -32,6 +34,10 @@ app.post('/',async function(req,res){
                     res.render('',{autenticar:'no',valido:''});
                 }
                 else if(result){
+					usuarioActual= usuario;
+					var token = jwt.sign({id:user.usuario,permission:true},process.env.SECRET,{expiresIn: "1h"});
+					res.cookie("token",token,{httpOnly: true});
+
                     res.redirect("/menu");
                 }
                 else{
@@ -63,7 +69,7 @@ app.post('/signUp',async function(req,res){
                     res.render('signUp', {repetido:''});
                 }
                 else{
-                    res.redirect("/menu");
+                    res.redirect("/");
                 }
             });
         }
@@ -71,7 +77,7 @@ app.post('/signUp',async function(req,res){
 })
 
 
-app.get("/menu",function(req,res){
+app.get("/menu",verify,function(req,res){
     res.render("menu");
 })
 
@@ -80,7 +86,7 @@ var comes_from_selection = false;
 var user_id = 0;
 var comment_to_edit = undefined;
 
-app.get("/solar",function(req,res){
+app.get("/solar",verify,function(req,res){
 	if (comes_from_selection)
 		comes_from_selection = false;
 	else
@@ -108,13 +114,13 @@ app.get("/solar",function(req,res){
 				selected: selection,
 				comments: comment_section,
 				comment_to_edit: comment_to_edit,
-				user: user_id // Cambiar a usuario actual
+				user: usuarioActual // Cambiar a usuario actual
 			});
 		}
 	});
 })
 
-app.post('/view_img', (req, res) => {
+app.post('/view_img', verify,(req, res) => {
 	var img_name = req.body.img;
 	var docs = Artwork.find({gallery: "solar"});
 
@@ -131,7 +137,7 @@ app.post('/view_img', (req, res) => {
 	});
 });
 
-app.post('/publishComment', async (req, res) => {
+app.post('/publishComment',verify, async (req, res) => {
 	var msg = req.body;
 
 	if (msg.comment) {
@@ -139,7 +145,7 @@ app.post('/publishComment', async (req, res) => {
 
 		Comment.find({
 			artwork: selection.work_title,
-			user: user_id // Cambiar a usuario actual
+			user: usuarioActual // Cambiar a usuario actual
 		}, async (error, docs) => {
 			if (error)
 				console.log(error);
@@ -149,7 +155,7 @@ app.post('/publishComment', async (req, res) => {
 				if (can_publish) {
 					var new_comment = new Comment({
 						text: comment,
-						user: user_id, // Cambiar a usuario actual
+						user: usuarioActual, // Cambiar a usuario actual
 						artwork: selection.work_title
 					});
 
@@ -174,7 +180,7 @@ app.post('/publishComment', async (req, res) => {
 	res.redirect('/solar');
 });
 
-app.post('/comment_change', async (req, res) => {
+app.post('/comment_change',verify, async (req, res) => {
 	var msg = req.body;
 
 	if (msg.edit) {
@@ -183,7 +189,7 @@ app.post('/comment_change', async (req, res) => {
 
 		Comment.find({
 			artwork: selection.work_title,
-			user: user_id // Cambiar a usuario actual
+			user: usuarioActual // Cambiar a usuario actual
 		}, (error, doc) => {
 			if (error)
 				console.log(error);

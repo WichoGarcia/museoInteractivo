@@ -1,13 +1,17 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const config = require("./config");
+var cookieParser = require("cookie-parser")
+var session = require('express-session');
+var dotenv = require("dotenv");
+
+dotenv.config();
 
 const app = express();
 
 
 // connection to Mongo db
-mongoose.connect(config.db.connectionUrl,{
+mongoose.connect(process.env.MONGODB_HOST,{
     useNewUrlParser:true,
     useUnifiedTopology:true
 })
@@ -17,24 +21,30 @@ mongoose.connect(config.db.connectionUrl,{
 // importing routescls
 const indexRoutes = require('./routes/indexRoutes');
 
-
 // settings
-app.set('port', config.app.port);
+
 app.set('views','views');
 app.set('view engine', 'ejs');
 
 // middlewares
+
 app.use(morgan('dev'));
-app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-app.use(express.static("public"));
+app.use(express.static('public'));
+app.use(cookieParser());
+app.use(session({
+    secret: 'myscret',
+    resave: false,
+    saveUninitialized:false
+}))
+
+// variables globales
+// middleware para mensajes
 
 
 // routes
 app.use('/', indexRoutes);
 
-app.listen(app.get('port'), () =>{
+app.listen(process.env.PORT, () =>{
     console.log(`server on port ${app.get('port')}`);
 })
-
-
